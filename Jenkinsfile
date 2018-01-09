@@ -5,6 +5,7 @@ pipeline {
 		MAJOR_VERSION = 1
 	}
 	
+	stages {
 		stage('Unit Tests') {
 			agent {
 				label 'Slave 1'
@@ -36,9 +37,9 @@ pipeline {
 				sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
 			}
 		}
-		stage("Running on Slave 1") {
+		stage("Running on CentOS") {
 			agent {
-				label 'Slave 1'
+				label 'CentOS'
 			}
 			steps {
 				sh "wget http://34.253.230.147/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
@@ -92,4 +93,5 @@ pipeline {
 			}
 		}
 	}
+}
 
