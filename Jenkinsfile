@@ -5,17 +5,9 @@ pipeline {
 		MAJOR_VERSION = 1
 	}
 	
-	stages {
-		stage ('Say Hello') {
-			agent any
-			
-			steps {
-				sayHello 'Awesome Student'
-			}
-		}
 		stage('Unit Tests') {
 			agent {
-				label 'apache'
+				label 'Slave 1'
 			}
 			steps {
 				sh 'ant -f test.xml -v'
@@ -24,7 +16,7 @@ pipeline {
 		}
 		stage('build') {
 			agent {
-				label 'apache'
+				label 'Slave 1'
 			}
 			steps {
 				sh 'ant -f build.xml -v'
@@ -37,16 +29,16 @@ pipeline {
 		}
 		stage('deploy') {
 			agent {
-				label 'apache'
+				label 'Slave 1'
 			}
 			steps {
 				sh "if ![ -d '/var/www/html/rectangles/all/${env.BRANCH_NAME}' ]; then mkdir /var/www/html/rectangles/all/${env.BRANCH_NAME}; fi"
 				sh "cp dist/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar /var/www/html/rectangles/all/${env.BRANCH_NAME}/"
 			}
 		}
-		stage("Running on CentOS") {
+		stage("Running on Slave 1") {
 			agent {
-				label 'CentOS'
+				label 'Slave 1'
 			}
 			steps {
 				sh "wget http://34.253.230.147/rectangles/all/${env.BRANCH_NAME}/rectangle_${env.MAJOR_VERSION}.${env.BUILD_NUMBER}.jar"
@@ -64,7 +56,7 @@ pipeline {
 		}
 		stage ('Promote to Green') {
 			agent {
-				label 'apache'
+				label 'Slave 1'
 			}
 			when {
 				branch 'master'
@@ -75,7 +67,7 @@ pipeline {
 		}
 		stage ('Promote Dev Branch to Master') {
 			agent {
-				label 'apache'
+				label 'Slave 1'
 			}
 			when {
 				branch 'development'
